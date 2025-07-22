@@ -1,0 +1,33 @@
+name: Deploy API
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host:     ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}   # deploy
+          key:      ${{ secrets.SSH_KEY }}    # same private key as before
+          script: |
+            set -e
+            # put the code in its own folder
+            if [ ! -d ~/wallet-watcher-api ]; then
+              git clone --depth 1 https://github.com/<YOU>/wallet-watcher-api.git ~/wallet-watcher-api
+            fi
+            cd ~/wallet-watcher-api
+            git pull origin main
+
+            # build & (re)create only this stack
+            docker compose build
+            docker compose up -d --force-recreate
+            docker image prune -f
