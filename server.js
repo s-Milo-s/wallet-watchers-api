@@ -1,4 +1,5 @@
 // server.js  ── tiny read‑only API for wallet metrics
+// ▷ uses Node.js, Express, PostgreSQL, and NodeCache
 import express from "express";
 import cors from "cors";
 import pg from "pg";
