@@ -22,7 +22,7 @@ jobs:
             set -e
             # put the code in its own folder
             if [ ! -d ~/wallet-watcher-api ]; then
-              git clone --depth 1 https://github.com/<YOU>/wallet-watcher-api.git ~/wallet-watcher-api
+              git clone --depth 1 https://github.com/s-Milo-s/wallet-watchers-api.git ~/wallet-watcher-api
             fi
             cd ~/wallet-watcher-api
             git pull origin main
