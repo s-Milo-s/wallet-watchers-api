@@ -5,12 +5,12 @@ services:
     build: .
     container_name: wallet-watcher-api
     restart: unless-stopped
-    
+
     env_file:
       - .env
 
     expose:
-      - "4000"          # internal‑only; Caddy will hit this
+      - "3000"          # internal‑only; Caddy will hit this
 
   caddy:
     image: caddy:2-alpine
