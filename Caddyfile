@@ -1,0 +1,4 @@
+apiwalletwatchers.com {
+    encode gzip
+    reverse_proxy app:3000   # “app” must match your Node service name
+}

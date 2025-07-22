@@ -1,10 +1,31 @@
-# wallet-watcher-api/docker-compose.yml
+version: "3.9"
+
 services:
   express_api:
     build: .
     container_name: wallet-watcher-api
     restart: unless-stopped
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
+    
+    env_file:
+      - .env
+
+    expose:
+      - "4000"          # internal‑only; Caddy will hit this
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy
+    restart: unless-stopped
     ports:
-      - "4000:4000"        # public for now; you can proxy later
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - express_api
+
+volumes:
+  caddy_data:
+  caddy_config:

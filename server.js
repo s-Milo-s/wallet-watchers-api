@@ -20,6 +20,9 @@ const cache = new NodeCache({ stdTTL: 300 });  // 🔹 2) 300 s = 5 min
 
 const app = express();
 app.use(cors()); // allow all origins for now
+app.set('trust proxy', true);       
+
+app.get('/health', (_, res) => res.send('ok'));
 
 function metricsTable(poolSlug) {
   return `${poolSlug}_wallet_metrics`;
