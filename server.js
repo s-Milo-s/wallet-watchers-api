@@ -88,6 +88,51 @@ app.get("/api/top-wallets/:pool", async (req, res) => {
   }
 });
 
+app.get("/api/ingest-stats/:pool", async (req, res) => {
+  const poolSlug = req.params.pool;
+  const cacheKey = `stats:${poolSlug}`;         // 5‑min cache
+  const cached   = cache.get(cacheKey);
+  if (cached) return res.json(cached);
+
+  // • latest run  • lifetime totals
+  const sql = `
+    WITH latest AS (
+      SELECT timestamp,
+             log_count,
+             duration_seconds
+      FROM   extraction_metrics
+      WHERE  pool_slug = $1
+      ORDER  BY timestamp DESC
+      LIMIT  1
+    ),
+    totals AS (
+      SELECT SUM(log_count)       AS total_logs,
+             SUM(duration_seconds) AS total_duration
+      FROM   extraction_metrics
+      WHERE  pool_slug = $1
+    )
+    SELECT
+      l.timestamp,
+      l.log_count,
+      l.duration_seconds,
+      ROUND(l.log_count / NULLIF(l.duration_seconds,0), 2)       AS logs_per_second,
+      t.total_logs
+    FROM   latest l
+    CROSS  JOIN totals t;
+  `;
+
+  try {
+    const { rows } = await pool.query(sql, [poolSlug]);
+    const stats = rows[0] ?? {};     
+    console.log(stats)          // empty object if none yet
+    cache.set(cacheKey, stats, 300);           // 5‑minute TTL
+    return res.json(stats);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "DB query failed" });
+  }
+});
+
 app.listen(PORT, () =>
   console.log(`🟢 Wallet‑metrics API listening on http://localhost:${PORT}`)
 );
