@@ -124,7 +124,6 @@ app.get("/api/ingest-stats/:pool", async (req, res) => {
   try {
     const { rows } = await pool.query(sql, [poolSlug]);
     const stats = rows[0] ?? {};     
-    console.log(stats)          // empty object if none yet
     cache.set(cacheKey, stats, 300);           // 5‑minute TTL
     return res.json(stats);
   } catch (err) {
