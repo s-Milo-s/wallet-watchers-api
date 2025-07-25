@@ -96,29 +96,16 @@ app.get("/api/ingest-stats/:pool", async (req, res) => {
 
   // • latest run  • lifetime totals
   const sql = `
-    WITH latest AS (
-      SELECT timestamp,
-             log_count,
-             duration_seconds
-      FROM   extraction_metrics
-      WHERE  pool_slug = $1
-      ORDER  BY timestamp DESC
-      LIMIT  1
-    ),
-    totals AS (
-      SELECT SUM(log_count)       AS total_logs,
-             SUM(duration_seconds) AS total_duration
-      FROM   extraction_metrics
-      WHERE  pool_slug = $1
-    )
     SELECT
-      l.timestamp,
-      l.log_count,
-      l.duration_seconds,
-      ROUND(l.log_count / NULLIF(l.duration_seconds,0), 2)       AS logs_per_second,
-      t.total_logs
-    FROM   latest l
-    CROSS  JOIN totals t;
+      timestamp,
+      log_count,
+      duration_seconds,
+      ROUND(log_count / NULLIF(duration_seconds, 0), 2) AS logs_per_second,
+      log_count AS total_logs
+    FROM extraction_metrics
+    WHERE pool_slug = $1
+    ORDER BY timestamp DESC
+    LIMIT 1;
   `;
 
   try {
