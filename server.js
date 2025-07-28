@@ -5,6 +5,7 @@ import cors from "cors";
 import pg from "pg";
 import dotenv from "dotenv";
 import NodeCache from "node-cache";      // 🔹 1) add
+import poolFlowRouter from "./routes/poolFlow.js"; // import the pool flow router
 dotenv.config();
 
 const { DATABASE_URL, PORT = 4000 } = process.env;
@@ -20,7 +21,9 @@ const cache = new NodeCache({ stdTTL: 300 });  // 🔹 2) 300 s = 5 min
 
 const app = express();
 app.use(cors()); // allow all origins for now
-app.set('trust proxy', true);       
+app.set('trust proxy', true);      
+ 
+app.use(poolFlowRouter);
 
 app.get('/health', (_, res) => res.send('ok'));
 
