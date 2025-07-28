@@ -46,8 +46,8 @@ app.get("/api/wallet-metrics/:pool", async (req, res) => {
            color_val,
            bubble_size
     FROM   ${table}
-    WHERE  updated_at >= NOW() - INTERVAL '180 days'
-      AND  trades      >= 30
+    WHERE  updated_at >= NOW() - INTERVAL '90 days'
+      AND  trades      >= 10
       AND  turnover    >= 10000;
   `;
   try {
