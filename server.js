@@ -20,9 +20,14 @@ const pool = new pg.Pool({
 const cache = new NodeCache({ stdTTL: 300 });  // 🔹 2) 300 s = 5 min
 
 const app = express();
-app.use(cors()); // allow all origins for now
+app.use(cors({
+  origin: [
+    "https://dexwalletwatch.netlify.app",
+    "http://localhost:5173"
+  ]
+}));
 app.set('trust proxy', true);      
- 
+
 app.use(poolFlowRouter);
 
 app.get('/health', (_, res) => res.send('ok'));
