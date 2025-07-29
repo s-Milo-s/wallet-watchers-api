@@ -26,6 +26,12 @@ app.use(cors({
     "http://localhost:5173"
   ]
 }));
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "https://dexwalletwatch.netlify.app");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  next();
+});
 app.set('trust proxy', true);      
 
 app.use(poolFlowRouter);
